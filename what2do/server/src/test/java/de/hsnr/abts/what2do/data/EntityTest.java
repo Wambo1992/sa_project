@@ -9,7 +9,11 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import de.hsnr.abts.what2do.business.Category;
+import de.hsnr.abts.what2do.business.Task;
+import de.hsnr.abts.what2do.business.User;
 import de.hsnr.abts.what2do.data.entities.CategoryEntity;
+import de.hsnr.abts.what2do.data.entities.DatabaseFactory;
 import de.hsnr.abts.what2do.data.entities.TaskEntity;
 import de.hsnr.abts.what2do.data.entities.UserEntity;
 
@@ -23,7 +27,8 @@ public class EntityTest extends TestCase {
 		// Create Entity Manager
 		emf = Persistence.createEntityManagerFactory("mongodb");
 		em = emf.createEntityManager();
-		
+
+		deleteAllData();
 	}
 
 	@Override
@@ -99,6 +104,28 @@ public class EntityTest extends TestCase {
 
 	}
 
+	@Test
+	public void testDatabaseFactory() {
+		UserEntity user = createUser("test", "test");
+		User u = DatabaseFactory.getUser(user);
+
+		assertEquals(u.getId(), user.getId().toString());
+		assertEquals(u.getUsername(), user.getUsername());
+		assertEquals(u.getPassword(), user.getPassword());
+
+		CategoryEntity ce = createCategory("TestCategory", user);
+		Category c = DatabaseFactory.getCategory(ce);
+
+		assertEquals(c.getId(), ce.getId().toString());
+		assertEquals(c.getTitle(), ce.getTitle());
+
+		TaskEntity te = createTask("TestTask", ce);
+		Task t = DatabaseFactory.getTask(te);
+
+		assertEquals(t.getId(), te.getId().toString());
+		assertEquals(t.getTitle(), te.getTitle());
+	}
+
 	private UserEntity createUser(String username, String password) {
 		// start Transaction
 		em.getTransaction().begin();
@@ -131,4 +158,9 @@ public class EntityTest extends TestCase {
 		em.getTransaction().commit();
 		return task;
 	}
+
+	private void deleteAllData() {
+		// TODO: implement reset of Database
+	}
+
 }
