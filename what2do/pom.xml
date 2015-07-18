@@ -9,7 +9,7 @@
 
 	<modules>
 		<module>server</module>
-		<!--<module>what2do-app</module>-->
+		<module>what2do-app</module>
 	</modules>
 
 	<build>
