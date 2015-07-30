@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import org.bson.types.ObjectId;
 
+
 @Entity
 @Table(name="CATEGORIES")
 public class CategoryEntity {
