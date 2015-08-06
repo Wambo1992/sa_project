@@ -10,7 +10,8 @@
 	<modules>
 		<module>server</module>
 <!-- 		<module>what2do-app</module> -->
-  </modules>
+  <module>common</module>
+	</modules>
 
 	<build>
 <!-- 		<pluginManagement> -->
