@@ -7,7 +7,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<name>server Jersey Webapp</name>
 	<properties>
-		<jersey-version>2.16</jersey-version>
+		<jerseyVersion>1.12</jerseyVersion>
 		<!-- <cargo-version>1.4.8</cargo-version> -->
 	</properties>
 	<build>
@@ -50,36 +50,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- Tomcat plugin -->
-			<!-- <plugin> -->
-			<!-- <groupId>org.codehaus.cargo</groupId> -->
-			<!-- <artifactId>cargo-maven2-plugin</artifactId> -->
-			<!-- <version>1.4.8</version> -->
-			<!-- <configuration> -->
-			<!-- <container> -->
-			<!-- <containerId>tomcat8x</containerId> -->
-			<!-- <home>${env.CATALINA_HOME}</home> -->
-			<!-- </container> -->
-			<!-- <configuration> -->
-			<!-- <type>existing</type> -->
-			<!-- <home>${env.CATALINA_HOME}</home> -->
-			<!-- </configuration> -->
-			<!-- <deployables> -->
-			<!-- <deployable> -->
-			<!-- <groupId>de.hsnr.abts.what2do</groupId> -->
-			<!-- <artifactId>server</artifactId> -->
-			<!-- <type>war</type> -->
-			<!-- <properties> -->
-			<!-- <context>${project.build.finalName}</context> -->
-			<!-- </properties> -->
-			<!-- </deployable> -->
-			<!-- </deployables> -->
-			<!-- <deployer> -->
-			<!-- <type>installed</type> -->
-			<!-- </deployer> -->
-			<!-- </configuration> -->
-			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
@@ -134,8 +104,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
 		</plugins>
 	</build>
 	<dependencyManagement>
@@ -155,12 +123,12 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>1.12</version>
+			<version>${jerseyVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
-			<version>1.12</version>
+			<version>${jerseyVersion}</version>
 		</dependency>
 
 		<!-- Database -->
@@ -177,45 +145,19 @@
 			<artifactId>jbossjta</artifactId>
 		</dependency>
 
+		<!-- JSON -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+
 		<!-- Utils -->
 		<dependency>
 			<groupId>net.sf.dozer</groupId>
 			<artifactId>dozer</artifactId>
 			<version>5.5.1</version>
 		</dependency>
-
-		<!-- Embedded Tomcat -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.jboss.shrinkwrap</groupId> -->
-		<!-- <artifactId>shrinkwrap-impl-base</artifactId> -->
-		<!-- <version>1.2.1</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.tomcat.embed</groupId> -->
-		<!-- <artifactId>tomcat-embed-core</artifactId> -->
-		<!-- <version>7.0.26</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.tomcat.embed</groupId> -->
-		<!-- <artifactId>tomcat-embed-logging-juli</artifactId> -->
-		<!-- <version>7.0.26</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.eclipse.jdt.core.compiler</groupId> -->
-		<!-- <artifactId>ecj</artifactId> -->
-		<!-- <version>3.7.1</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.tomcat.embed</groupId> -->
-		<!-- <artifactId>tomcat-embed-jasper</artifactId> -->
-		<!-- <version>7.0.26</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
