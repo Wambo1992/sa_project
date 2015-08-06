@@ -1,36 +1,48 @@
 package de.hsnr.abts.what2do.data.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.dozer.DozerBeanMapper;
-import org.dozer.Mapper;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
-import de.hsnr.abts.what2do.business.Category;
-import de.hsnr.abts.what2do.business.Task;
-import de.hsnr.abts.what2do.business.User;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 public class DatabaseFactory {
-	private static List<String> list = new ArrayList<String>();
-	static {
-		list.add("dozer.xml");
-	}
-	public static Mapper mapper = new DozerBeanMapper(list);
+	private EntityManager em;
+	Session session;
 
-	public static Category getCategory(CategoryEntity c) {
-		return DatabaseFactory.mapper.map(c, Category.class);
-	}
+	public DatabaseFactory() {
+		EntityManagerFactory emf = Persistence
+				.createEntityManagerFactory("mongodb");
+		
+		em = emf.createEntityManager();
+		session = em.unwrap(Session.class);
 
-	public static User getUser(UserEntity u) {
-		List<String> list = new ArrayList<String>();
-		list.add("dozer.xml");
-		Mapper mapper = new DozerBeanMapper(list);
-
-		return mapper.map(u, User.class);
 	}
 
-	public static Task getTask(TaskEntity t) {
-
-		return mapper.map(t, Task.class);
+	public List<CategoryEntity> getCategories(UserEntity user) {
+		Criteria criteria = session.createCriteria(CategoryEntity.class);
+		criteria.add(Restrictions.eq("user", user));
+		return (List<CategoryEntity>) criteria.list();
+	}
+	
+	public List<UserEntity> getUsers() {
+		Criteria criteria = session.createCriteria(UserEntity.class);
+		return (List<UserEntity>) criteria.list();
+	}
+	
+	public List<TaskEntity> getTasks(CategoryEntity c) {
+		Criteria criteria = session.createCriteria(TaskEntity.class);
+		criteria.add(Restrictions.eq("category", c));
+		return (List<TaskEntity>) criteria.list();
+	}
+	
+	public List<TaskEntity> getTasks(UserEntity u) {
+		Criteria criteria = session.createCriteria(TaskEntity.class);
+		criteria.add(Restrictions.eq("category.user", u));
+		return (List<TaskEntity>) criteria.list();
 	}
 }
