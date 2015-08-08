@@ -1,5 +1,6 @@
 package de.hsnr.abts.what2do.data.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -15,7 +16,7 @@ import org.bson.types.ObjectId;
 
 @Entity
 @Table(name="TASKS")
-public class TaskEntity {
+public class TaskEntity implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

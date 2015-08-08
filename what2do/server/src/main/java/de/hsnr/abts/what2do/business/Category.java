@@ -1,7 +1,6 @@
 package de.hsnr.abts.what2do.business;
 
-
-public class Category {
+public class Category{
 	private String id;
 	private String title;
 	private User user;

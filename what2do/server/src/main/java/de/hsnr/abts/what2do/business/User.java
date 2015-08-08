@@ -1,7 +1,7 @@
 package de.hsnr.abts.what2do.business;
 
 
-public class User {
+public class User{
 	private String id;
 	private String username;
 	private String password;
@@ -25,5 +25,16 @@ public class User {
 		this.password = password;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ID: "+ id);
+		builder.append(System.lineSeparator());
+		builder.append("Username: "+username);
+		builder.append(System.lineSeparator());
+		builder.append("Password: "+password);
+		builder.append(System.lineSeparator());
+		builder.append(System.lineSeparator());
+		return builder.toString();
+	}
 }

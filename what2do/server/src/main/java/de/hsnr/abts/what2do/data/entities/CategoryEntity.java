@@ -1,5 +1,7 @@
 package de.hsnr.abts.what2do.data.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,10 +12,9 @@ import javax.persistence.Table;
 
 import org.bson.types.ObjectId;
 
-
 @Entity
 @Table(name="CATEGORIES")
-public class CategoryEntity {
+public class CategoryEntity implements Serializable{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private ObjectId id;
