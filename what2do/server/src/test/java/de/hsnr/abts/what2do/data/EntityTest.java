@@ -1,29 +1,26 @@
 package de.hsnr.abts.what2do.data;
 
+import static org.junit.Assert.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import junit.framework.TestCase;
-
+import org.hibernate.HibernateException;
 import org.junit.Test;
 
-import de.hsnr.abts.what2do.business.Category;
-import de.hsnr.abts.what2do.business.Task;
-import de.hsnr.abts.what2do.business.User;
 import de.hsnr.abts.what2do.data.entities.CategoryEntity;
 import de.hsnr.abts.what2do.data.entities.DatabaseFactory;
 import de.hsnr.abts.what2do.data.entities.TaskEntity;
 import de.hsnr.abts.what2do.data.entities.UserEntity;
 
-public class EntityTest extends TestCase {
+public class EntityTest {
 	EntityManagerFactory emf = null;
 	EntityManager em = null;
+	DatabaseFactory dataFact;
 
-	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
 		// Create Entity Manager
 		emf = Persistence.createEntityManagerFactory("mongodb");
 		em = emf.createEntityManager();
@@ -31,26 +28,25 @@ public class EntityTest extends TestCase {
 		deleteAllData();
 	}
 
-	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
 		if (em != null)
 			em.close();
 		if (emf != null)
 			emf.close();
+		dataFact.close();
 	}
 
 	@Test
 	public void testWriteToDB() {
-
+		dataFact = new DatabaseFactory();
 		try {
 			String username = "testUser";
 			String password = "testUserPW";
 			// Write to DB
-			UserEntity user = createUser(username, password);
+			UserEntity user = dataFact.createUser(username, password);
 
 			// Read from DB
-			UserEntity newUser = em.find(UserEntity.class, user.getId());
+			UserEntity newUser = dataFact.getUserById(user.getId().toString());
 
 			assertEquals(username, newUser.getUsername());
 			assertEquals(password, newUser.getPassword());
@@ -58,11 +54,11 @@ public class EntityTest extends TestCase {
 
 			// Write to DB
 			String categoryName = "Einkaufsliste";
-			CategoryEntity category = createCategory(categoryName, newUser);
+			CategoryEntity category = dataFact.createCategory(categoryName,
+					newUser.getId().toString());
 
 			// Read from DB
-			CategoryEntity newCategory = em.find(CategoryEntity.class,
-					category.getId());
+			CategoryEntity newCategory = dataFact.getCategoryById(category.getId().toString());
 
 			assertEquals(categoryName, newCategory.getTitle());
 			assertEquals(newUser, newCategory.getUser());
@@ -73,14 +69,17 @@ public class EntityTest extends TestCase {
 			String titleTask2 = "Eier";
 			String titleTask3 = "Butter";
 
-			TaskEntity task1 = createTask(titleTask1, newCategory);
-			TaskEntity task2 = createTask(titleTask2, newCategory);
-			TaskEntity task3 = createTask(titleTask3, newCategory);
+			TaskEntity task1 = dataFact.createTask(titleTask1, newCategory
+					.getId().toString());
+			TaskEntity task2 = dataFact.createTask(titleTask2, newCategory
+					.getId().toString());
+			TaskEntity task3 = dataFact.createTask(titleTask3, newCategory
+					.getId().toString());
 
 			// Read from DB
-			TaskEntity newTask1 = em.find(TaskEntity.class, task1.getId());
-			TaskEntity newTask2 = em.find(TaskEntity.class, task2.getId());
-			TaskEntity newTask3 = em.find(TaskEntity.class, task3.getId());
+			TaskEntity newTask1 = dataFact.getTaskById(task1.getId().toString());
+			TaskEntity newTask2 = dataFact.getTaskById(task2.getId().toString());
+			TaskEntity newTask3 = dataFact.getTaskById(task3.getId().toString());
 
 			assertEquals(titleTask1, newTask1.getTitle());
 			assertEquals(newCategory, newTask1.getCategory());
@@ -100,65 +99,45 @@ public class EntityTest extends TestCase {
 		} catch (PersistenceException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
+		} finally {
+			dataFact.close();
 		}
-
+		
 	}
 
 	@Test
 	public void testDatabaseFactory() {
-		UserEntity user = createUser("test", "test");
-		User u = DatabaseFactory.getUser(user);
+		dataFact = new DatabaseFactory();
+		
+		UserEntity user = dataFact.createUser("test", "test");
+		UserEntity u = dataFact.getUserById(user.getId().toString());
 
 		assertEquals(u.getId(), user.getId().toString());
 		assertEquals(u.getUsername(), user.getUsername());
 		assertEquals(u.getPassword(), user.getPassword());
 
-		CategoryEntity ce = createCategory("TestCategory", user);
-		Category c = DatabaseFactory.getCategory(ce);
+		CategoryEntity ce = dataFact.createCategory("TestCategory", user
+				.getId().toString());
+		CategoryEntity c = dataFact.getCategoryById(ce.getId().toString());
 
 		assertEquals(c.getId(), ce.getId().toString());
 		assertEquals(c.getTitle(), ce.getTitle());
 
-		TaskEntity te = createTask("TestTask", ce);
-		Task t = DatabaseFactory.getTask(te);
+		TaskEntity te = dataFact.createTask("TestTask", ce.getId().toString());
+		TaskEntity t = dataFact.getTaskById(te.getId().toString());
 
 		assertEquals(t.getId(), te.getId().toString());
 		assertEquals(t.getTitle(), te.getTitle());
+		
+		dataFact.close();
 	}
 
-	private UserEntity createUser(String username, String password) {
-		// start Transaction
-		em.getTransaction().begin();
-		// Create User
-		UserEntity user = new UserEntity(username, password);
-		em.persist(user);
-		em.getTransaction().commit();
-		return user;
+	@Test(expected = HibernateException.class)
+	public void testDoubleEntriesForUser() throws Exception{
+		dataFact = new DatabaseFactory();
+		dataFact.createUser("test", "test");
+		dataFact.createUser("test", "test");
 	}
-
-	private CategoryEntity createCategory(String categoryName, UserEntity user) {
-		// start Transaction
-		em.getTransaction().begin();
-
-		// Create Category
-		CategoryEntity category = new CategoryEntity(categoryName, user);
-		em.persist(category);
-		em.getTransaction().commit();
-
-		return category;
-	}
-
-	private TaskEntity createTask(String desc, CategoryEntity category) {
-		// start Transaction
-		em.getTransaction().begin();
-
-		// Create Task
-		TaskEntity task = new TaskEntity(desc, category);
-		em.persist(task);
-		em.getTransaction().commit();
-		return task;
-	}
-
 	private void deleteAllData() {
 		// TODO: implement reset of Database
 	}

@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.bson.types.ObjectId;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -100,7 +101,7 @@ public class DatabaseFactory {
 		return (CategoryEntity) q.uniqueResult();
 	}
 
-	public UserEntity createUser(String username, String password) {
+	public UserEntity createUser(String username, String password) throws HibernateException {
 		Transaction trans = getSession().beginTransaction();
 		UserEntity user = new UserEntity(username, password);
 		session.save(user);
@@ -108,7 +109,7 @@ public class DatabaseFactory {
 		return user;
 	}
 
-	public TaskEntity createTask(String title, String categoryId) {
+	public TaskEntity createTask(String title, String categoryId) throws HibernateException{
 		Transaction trans = getSession().beginTransaction();
 		CategoryEntity cat = getCategoryById(categoryId);
 		TaskEntity task = new TaskEntity(title, cat);
@@ -117,7 +118,7 @@ public class DatabaseFactory {
 		return task;
 	}
 
-	public CategoryEntity createCategory(String title, String userId) {
+	public CategoryEntity createCategory(String title, String userId) throws HibernateException{
 		Transaction trans = getSession().beginTransaction();
 		UserEntity user = getUserById(userId);
 		CategoryEntity cat = new CategoryEntity(title, user);
